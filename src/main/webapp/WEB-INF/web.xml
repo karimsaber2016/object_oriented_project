@@ -20,8 +20,17 @@
   </servlet-mapping>
   
   <servlet>
+		<servlet-name>list</servlet-name>
+		<servlet-class>web.EmployeeList</servlet-class> 
+  </servlet>
+   <servlet-mapping>
+    <servlet-name>list</servlet-name>
+    <url-pattern>/list</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
 		<servlet-name>adduser</servlet-name>
-		<servlet-class>web.AddUserServlet</servlet-class> 
+		<servlet-class>web.AddEmployeeServlet</servlet-class> 
   </servlet>
    <servlet-mapping>
     <servlet-name>adduser</servlet-name>
@@ -30,7 +39,7 @@
   
   <servlet>
 		<servlet-name>updateuser</servlet-name>
-		<servlet-class>web.UpdateUserServlet</servlet-class> 
+		<servlet-class>web.UpdateEmployeeServlet</servlet-class> 
   </servlet>
    <servlet-mapping>
     <servlet-name>updateuser</servlet-name>
@@ -40,11 +49,28 @@
    
   <servlet>
 		<servlet-name>deleteuser</servlet-name>
-		<servlet-class>web.DeleteUserServlet</servlet-class> 
+		<servlet-class>web.DeleteEmployeeServlet</servlet-class> 
   </servlet>
    <servlet-mapping>
     <servlet-name>deleteuser</servlet-name>
     <url-pattern>/deleteuser</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>adddepartment</servlet-name>
+    <servlet-class>web.AddDepartmentServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>adddepartment</servlet-name>
+      <url-pattern>/adddepartment</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+      <servlet-name>modifydepartment</servlet-name>
+      <servlet-class>web.DeleteDepartmentServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>modifydepartment</servlet-name>
+      <url-pattern>/modifydepartment</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -1,4 +1,3 @@
-<%@ page import="dao.UserDAO" %>
 <%@ page import="bean.Departments" %>
 <%@ page import="java.util.List" %>
 
@@ -28,6 +27,8 @@
         }
         h2 {
             color: #333;
+            text-align: center;
+            padding: 10px;
         }
         form {
             max-width: 400px;
@@ -80,16 +81,21 @@
         <label for="job_title">Job Title:</label>
         <input type="text" id="job_title" name="job_title" required><br>
 
-        <label for="department">Department:</label>
         <select id="department" name="department" required>
-            <option value="" disabled selected>Select Department</option>
-            <% UserDAO userDao = new UserDAO();
-               List<Departments> departmentsList = userDao.selectAllDepartments();
-               for (Departments department : departmentsList) {
-            %>
-            <option value="<%= department.getDepartment_id() %>"><%= department.getDepartment_name() %></option>
-            <% } %>
-        </select><br>
+		    <option value="" disabled selected>Select Department</option>
+		    <% 
+		        List<Departments> departmentsList = (List<Departments>) request.getAttribute("departmentsList");
+		        if (departmentsList != null && !departmentsList.isEmpty()) {
+		            for (Departments department : departmentsList) { 
+		    %>
+		        <option value="<%= department.getDepartment_id() %>"><%= department.getDepartment_name() %></option>
+		    <% 
+		            } 
+		        } else {
+		    %>
+		        <option disabled>No departments available</option>
+		    <% } %>
+		</select><br>
 
         <input type="submit" value="Add User">
     </form>

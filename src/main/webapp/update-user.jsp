@@ -1,4 +1,3 @@
-<%@ page import="dao.UserDAO" %>
 <%@ page import="bean.Employee" %>
 <%@ page import="bean.Departments" %>
 <%@ page import="java.util.List" %>
@@ -116,21 +115,23 @@
                 <input type="text" id="job_title" name="job_title" value="${user.job_title}" required>
 
                 <label for="department">Department:</label>
-                <select id="department" name="department" required>
-                    <option value="" disabled>Select Department</option>
-                    <% 
-                        UserDAO userDao = new UserDAO();
-                        List<Departments> departmentsList = userDao.selectAllDepartments();
-                        Integer selectedDepartment = (Integer) request.getAttribute("selectedDepartment");
-                        if (selectedDepartment == null) {
-                            selectedDepartment = -1; // Set a default invalid value if not provided
-                        }
-                        for (Departments department : departmentsList) {
-                            String selected = department.getDepartment_id() == selectedDepartment ? "selected" : "";
-                    %>
-                        <option value="<%= department.getDepartment_id() %>" <%= selected %>><%= department.getDepartment_name() %></option>
-                    <% } %>
-                </select>
+				<select id="department" name="department" required>
+				    <option value="" disabled>Select Department</option>
+				    <% 
+				        List<Departments> departmentsList = (List<Departments>) request.getAttribute("departments");
+				        Integer selectedDepartment = (Integer) request.getAttribute("selectedDepartment");
+				        if (departmentsList != null && !departmentsList.isEmpty()) {
+				            for (Departments department : departmentsList) {
+				                String selected = (selectedDepartment != null && department.getDepartment_id() == selectedDepartment) ? "selected" : "";
+				    %>
+				        <option value="<%= department.getDepartment_id() %>" <%= selected %>><%= department.getDepartment_name() %></option>
+				    <% 
+				            } 
+				        } else {
+				    %>
+				        <option disabled>No departments available</option>
+				    <% } %>
+				</select>
                 <input type="submit" value="Update User">
             </form>
         </div>

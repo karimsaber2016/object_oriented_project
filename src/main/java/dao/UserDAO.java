@@ -28,7 +28,16 @@ public class UserDAO {
     private static final String DELETE_DEPARTMENT = "DELETE FROM departments where department_id=?";
     private static final String DELETE_EMPLOYEE = "delete from employees where employee_id=?";
 
-    public UserDAO(){}
+    private static UserDAO instance;
+
+    private UserDAO() {}
+
+    public static UserDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDAO();
+        }
+        return instance;
+    }
 
     /**
      * This method is used to get the connection

@@ -48,16 +48,13 @@
     <div class="container">
         <h1>Welcome to the Admin Dashboard</h1>
         <div class="menu">
-            <a href="add-user.jsp">Add an Employee</a>
+            <a href="adduser">Add an Employee</a>
             <a href="delete-user.jsp">Remove an Employee</a>
-            <a href="update-user.jsp">Update an Employee's info</a>
-            <a href="list.jsp">View Employee List</a>
+            <a href="updateuser">Update an Employee's info</a>
+            <a href="list">View Employee List</a>
         </div>
         <div class="menu">
-            <a href="add-department.jsp">Add a Department</a>
-            <a href="delete-department.jsp">Remove a Department</a>
-            <a href="update-department.jsp">Update a Department</a>
-            <a href="update-department.jsp">View Departments</a>
+            <a href="modifydepartment">Modify the Departments</a>
         </div>
     </div>
 </body>

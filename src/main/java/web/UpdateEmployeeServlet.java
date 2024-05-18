@@ -14,22 +14,18 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class UpdateEmployeeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private UserDAO userDao;
-
-    public void init() {
-        userDao = new UserDAO();
-    }
+    UserDAO userDAO = UserDAO.getInstance();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String employeeID = request.getParameter("employeeID");
         if (employeeID != null && !employeeID.isEmpty()) {
-            Employee existingUser = userDao.selectEmployeeByID(Integer.parseInt(employeeID));
+            Employee existingUser = userDAO.selectEmployeeByID(Integer.parseInt(employeeID));
             if (existingUser != null) {
                 request.setAttribute("user", existingUser);
                 request.setAttribute("selectedDepartment", existingUser.getDepartment_id());
             }
         }
-        List<Departments> departments = userDao.selectAllDepartments();
+        List<Departments> departments = userDAO.selectAllDepartments();
         request.setAttribute("departments", departments);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("update-user.jsp");
@@ -51,9 +47,9 @@ public class UpdateEmployeeServlet extends HttpServlet {
         Employee employee = new Employee(id, firstName, lastName, email, birthDate, jobTitle, department_id);
         
         // Update the user in the database
-        userDao.updateEmployee(employee);
+        userDAO.updateEmployee(employee);
 
         // Redirect to the user list page
-        response.sendRedirect("list.jsp");
+        response.sendRedirect("list");
     }
 }

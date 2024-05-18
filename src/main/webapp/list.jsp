@@ -1,6 +1,7 @@
-<%@ page import="dao.UserDAO" %>
 <%@ page import="bean.Employee" %>
+<%@ page import="bean.Departments" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,9 +68,10 @@
         </thead>
         <tbody>
             <% 
-                UserDAO userDao = new UserDAO();
-                List<Employee> employeeList = userDao.selectAllEmployee();
-                for (Employee employee : employeeList) {
+                List<Employee> employeeList = (List<Employee>) request.getAttribute("employeesList");
+                Map<Integer, String> departmentMap = (Map<Integer, String>) request.getAttribute("departmentMap");
+                if (employeeList != null) {
+                    for (Employee employee : employeeList) {
             %>
             <tr>
                 <td><%= employee.getEmployee_id() %></td>
@@ -78,9 +80,12 @@
                 <td><%= employee.getEmail() %></td>
                 <td><%= employee.getBirth_date() %></td>
                 <td><%= employee.getJob_title() %></td>
-                <td><%= userDao.selectDepartmentByID(employee.getDepartment_id()) %></td>
+                <td><%= departmentMap.get(employee.getDepartment_id()) %></td>
             </tr>
-            <% } %>
+            <% 
+                    } 
+                }
+            %>
         </tbody>
     </table>
     <a href="../Object_Oriented_Project" class="go-back-button">Go Back</a>
