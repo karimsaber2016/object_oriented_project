@@ -9,6 +9,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add User</title>
     <style>
+    	.go-back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .go-back-button:hover {
+            background-color: #0056b3;
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -80,5 +93,6 @@
 
         <input type="submit" value="Add User">
     </form>
+    <a href="../Object_Oriented_Project" class="go-back-button">Go Back</a>
 </body>
 </html>

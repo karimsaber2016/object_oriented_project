@@ -17,11 +17,12 @@ public class UserDAO {
     private static final String INSERT_EMPLOYEE = "INSERT INTO employees (first_name, last_name, email, birth_date, job_title, department_id) VALUES (?, ?, ?, ?, ?, ?);";
 
     private static final String UPDATE_DEPARTMENT = "UPDATE departments SET department_id=?, department_name=?";
-    private static final String UPDATE_EMPLOYEE = "update employees set employee_id=?, first_name=?, last_name=?, email=?, birth_date=?, job_title=?, department_id=?";
+    private static final String UPDATE_EMPLOYEE = "UPDATE employees SET first_name=?, last_name=?, email=?, birth_date=?, job_title=?, department_id=? WHERE employee_id=?";
 
     private static final String SELECT_ALL_DEPARTMENT = "SELECT * FROM departments";
+    private static final String SELECT_DEPARTMENT_BY_ID = "SELECT department_id, department_name FROM departments WHERE department_id=?";
     private static final String SELECT_DEPARTMENT_BY_NAME = "SELECT department_id, department_name FROM departments WHERE department_name=?";
-    private static final String SELECT_EMPLOYEE_BY_ID = "select employee_id, last_name, email, birth_date, job_title, department_id from employees where employee_id=?";
+    private static final String SELECT_EMPLOYEE_BY_ID = "select employee_id, first_name, last_name, email, birth_date, job_title, department_id from employees where employee_id=?";
     private static final String SELECT_ALL_EMPLOYEE = "select * from employees";
 
     private static final String DELETE_DEPARTMENT = "DELETE FROM departments where department_id=?";
@@ -111,23 +112,25 @@ public class UserDAO {
      * @param user
      * @return boolean
      */
-    public boolean updateEmployee(Employee user){
+    public boolean updateEmployee(Employee employee){
         boolean result = false;
         try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(UPDATE_EMPLOYEE);
-            statement.setString(2, user.getFirst_name());
-            statement.setString(3, user.getLast_name());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getBirth_date());
-            statement.setString(6, user.getJob_title());
-            statement.setInt(7, user.getDepartment_id());
-            result = statement.executeUpdate() >0;
+            statement.setString(1, employee.getFirst_name());
+            statement.setString(2, employee.getLast_name());
+            statement.setString(3, employee.getEmail());
+            statement.setString(4, employee.getBirth_date());
+            statement.setString(5, employee.getJob_title());
+            statement.setInt(6, employee.getDepartment_id());
+            statement.setInt(7, employee.getEmployee_id());
+            result = statement.executeUpdate() > 0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return result;
     }
+
 
     /**
      * This method is used to select all departments
@@ -149,6 +152,23 @@ public class UserDAO {
         }
         return departments;
     }
+
+    public String selectDepartmentByID(int department_id){
+        String department_name = null; // Initialize department_name to null
+        try{
+            Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(SELECT_DEPARTMENT_BY_ID);
+            statement.setInt(1, department_id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()){ 
+                department_name = resultSet.getString("department_name");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return department_name;
+    }
+    
 
     /**
      * This method is used to select department by name
@@ -174,15 +194,15 @@ public class UserDAO {
 
     /**
      * This method is used to select user by id
-     * @param id
+     * @param employee_id
      * @return user
      */
-    public Employee selectEmployeeByID(int id){
+    public Employee selectEmployeeByID(int employee_id){
         Employee user = null;
         try{
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(SELECT_EMPLOYEE_BY_ID);
-            statement.setInt(1, id);
+            statement.setInt(1, employee_id);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 String firstName = resultSet.getString("first_name");
@@ -191,7 +211,7 @@ public class UserDAO {
                 String birthDate = resultSet.getString("birth_date");
                 String jobTitle = resultSet.getString("job_title");
                 int departmentID = resultSet.getInt("department_id");
-                user = new Employee(id, firstName, lastName, email, birthDate, jobTitle, departmentID);
+                user = new Employee(employee_id, firstName, lastName, email, birthDate, jobTitle, departmentID);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();

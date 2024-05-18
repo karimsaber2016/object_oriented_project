@@ -12,9 +12,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class UserServlet extends HttpServlet {
+public class EmployeeServlet extends HttpServlet {
     UserDAO userDao;
-    public UserServlet() {
+    public EmployeeServlet() {
     }
 
     public void init(ServletConfig config) throws ServletException{

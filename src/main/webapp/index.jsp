@@ -51,11 +51,13 @@
             <a href="add-user.jsp">Add an Employee</a>
             <a href="delete-user.jsp">Remove an Employee</a>
             <a href="update-user.jsp">Update an Employee's info</a>
+            <a href="list.jsp">View Employee List</a>
         </div>
-        <div>
+        <div class="menu">
             <a href="add-department.jsp">Add a Department</a>
             <a href="delete-department.jsp">Remove a Department</a>
             <a href="update-department.jsp">Update a Department</a>
+            <a href="update-department.jsp">View Departments</a>
         </div>
     </div>
 </body>

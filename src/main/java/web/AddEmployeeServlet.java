@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class AddUserServlet extends HttpServlet {
+public class AddEmployeeServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
     private UserDAO userDao;
@@ -40,6 +40,6 @@ public class AddUserServlet extends HttpServlet {
         userDao.insertEmployee(newUser);
 
         // Redirect to the user list page
-        response.sendRedirect("list");
+        response.sendRedirect("list.jsp");
     }
 }

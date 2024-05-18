@@ -19,5 +19,6 @@ public class Departments {
     public final int getDepartment_id() {return department_id;}
     public final String getDepartment_name() {return department_name;}
     
+    public void setDepartment_id(final int department_id) {this.department_id = department_id;}
     public void setDepartment_name(final String department_name) {this.department_name = department_name;}
 }
