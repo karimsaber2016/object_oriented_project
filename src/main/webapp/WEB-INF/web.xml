@@ -61,16 +61,26 @@
     <servlet-class>web.AddDepartmentServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-      <servlet-name>adddepartment</servlet-name>
-      <url-pattern>/adddepartment</url-pattern>
+    <servlet-name>adddepartment</servlet-name>
+    <url-pattern>/adddepartment</url-pattern>
   </servlet-mapping>
 
   <servlet>
-      <servlet-name>modifydepartment</servlet-name>
-      <servlet-class>web.DeleteDepartmentServlet</servlet-class>
+    <servlet-name>modifydepartment</servlet-name>
+    <servlet-class>web.DeleteDepartmentServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-      <servlet-name>modifydepartment</servlet-name>
-      <url-pattern>/modifydepartment</url-pattern>
+    <servlet-name>modifydepartment</servlet-name>
+    <url-pattern>/modifydepartment</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>logs</servlet-name>
+    <servlet-class>web.LogsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>logs</servlet-name>
+    <url-pattern>/logs</url-pattern>
+  </servlet-mapping>
+
 </web-app>

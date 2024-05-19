@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.util.List;
 
 import bean.Employee;
-import dao.UserDAO;
+import dao.UserCommandDAO;
+import dao.UserQueryDAO;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class EmployeeServlet extends HttpServlet {
-    UserDAO userDAO = UserDAO.getInstance();
+    UserCommandDAO commandDAO = UserCommandDAO.getInstance();
+    UserQueryDAO queryDAO = UserQueryDAO.getInstance();
     public EmployeeServlet() {
     }
 
@@ -63,14 +64,14 @@ public class EmployeeServlet extends HttpServlet {
         employee.setJob_title(request.getParameter("job_title"));
         employee.setDepartment_id(Integer.parseInt(request.getParameter("department_id")));
 
-        userDAO.insertEmployee(employee);
+        commandDAO.insertEmployee(employee);
         response.sendRedirect("list");
     }
 
     // Delete user
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            userDAO.deleteUser(Integer.parseInt(request.getParameter("id")));
+            commandDAO.deleteEmployee(Integer.parseInt(request.getParameter("id")));
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -81,7 +82,7 @@ public class EmployeeServlet extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response){
         int id = Integer.parseInt(request.getParameter("id"));
         try {
-            Employee user = userDAO.selectEmployeeByID(id);
+            Employee user = queryDAO.selectEmployeeByID(id);
             RequestDispatcher dispatcher = request.getRequestDispatcher("user-form.jsp");
             request.setAttribute("user", user);
             dispatcher.forward(request, response);
@@ -104,14 +105,14 @@ public class EmployeeServlet extends HttpServlet {
         employee.setJob_title(request.getParameter("job_title"));
         employee.setDepartment_id(Integer.parseInt(request.getParameter("department_id")));
 
-        userDAO.updateEmployee(employee);
+        commandDAO.updateEmployee(employee);
 
         response.sendRedirect("list");
     }
 
     private void showUserList(HttpServletRequest request, HttpServletResponse response){
         try {
-            List<Employee> users = userDAO.selectAllEmployee();
+            List<Employee> users = queryDAO.selectAllEmployee();
             request.setAttribute("users", users);
             RequestDispatcher dispatcher = request.getRequestDispatcher("user-list.jsp");
             dispatcher.forward(request, response);

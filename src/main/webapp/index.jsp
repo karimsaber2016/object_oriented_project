@@ -55,6 +55,7 @@
         </div>
         <div class="menu">
             <a href="modifydepartment">Modify the Departments</a>
+            <a href="logs">View Event Logs</a>
         </div>
     </div>
 </body>

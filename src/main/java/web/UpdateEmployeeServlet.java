@@ -5,7 +5,8 @@ import java.util.List;
 
 import bean.Departments;
 import bean.Employee;
-import dao.UserDAO;
+import dao.UserCommandDAO;
+import dao.UserQueryDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -14,18 +15,19 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class UpdateEmployeeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    UserDAO userDAO = UserDAO.getInstance();
+    UserCommandDAO commandDAO = UserCommandDAO.getInstance();
+    UserQueryDAO queryDAO = UserQueryDAO.getInstance();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String employeeID = request.getParameter("employeeID");
         if (employeeID != null && !employeeID.isEmpty()) {
-            Employee existingUser = userDAO.selectEmployeeByID(Integer.parseInt(employeeID));
+            Employee existingUser = queryDAO.selectEmployeeByID(Integer.parseInt(employeeID));
             if (existingUser != null) {
                 request.setAttribute("user", existingUser);
                 request.setAttribute("selectedDepartment", existingUser.getDepartment_id());
             }
         }
-        List<Departments> departments = userDAO.selectAllDepartments();
+        List<Departments> departments = queryDAO.selectAllDepartments();
         request.setAttribute("departments", departments);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("update-user.jsp");
@@ -47,7 +49,7 @@ public class UpdateEmployeeServlet extends HttpServlet {
         Employee employee = new Employee(id, firstName, lastName, email, birthDate, jobTitle, department_id);
         
         // Update the user in the database
-        userDAO.updateEmployee(employee);
+        commandDAO.updateEmployee(employee);
 
         // Redirect to the user list page
         response.sendRedirect("list");

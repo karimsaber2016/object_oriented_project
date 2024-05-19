@@ -1,54 +1,54 @@
 package dao;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+import bean.Event;
 import bean.Departments;
 import bean.Employee;
 
-public class UserDAO {
-	private String jdbcURL = "jdbc:mysql://localhost:3306/company";
+public class UserCommandDAO {
+    private String jdbcURL = "jdbc:mysql://localhost:3306/company";
     private String jdbcUserName = "root";
     private String jdbcPassword = "password";
     private String jdbcDriver = "com.mysql.cj.jdbc.Driver";
 
     private static final String INSERT_DEPARTMENT = "INSERT INTO departments (department_name) VALUES (?);";
     private static final String INSERT_EMPLOYEE = "INSERT INTO employees (first_name, last_name, email, birth_date, job_title, department_id) VALUES (?, ?, ?, ?, ?, ?);";
+    private static final String INSERT_EVENT = "INSERT INTO events (event_type, event_data, created_at) VALUES (?, ?, NOW())";
 
-    private static final String UPDATE_DEPARTMENT = "UPDATE departments SET department_id=?, department_name=?";
+    private static final String UPDATE_DEPARTMENT = "UPDATE departments SET department_name=? WHERE department_id=?";
     private static final String UPDATE_EMPLOYEE = "UPDATE employees SET first_name=?, last_name=?, email=?, birth_date=?, job_title=?, department_id=? WHERE employee_id=?";
 
-    private static final String SELECT_ALL_DEPARTMENT = "SELECT * FROM departments";
-    private static final String SELECT_DEPARTMENT_BY_ID = "SELECT department_id, department_name FROM departments WHERE department_id=?";
-    private static final String SELECT_DEPARTMENT_BY_NAME = "SELECT department_id, department_name FROM departments WHERE department_name=?";
-    private static final String SELECT_EMPLOYEE_BY_ID = "select employee_id, first_name, last_name, email, birth_date, job_title, department_id from employees where employee_id=?";
-    private static final String SELECT_ALL_EMPLOYEE = "select * from employees";
+    private static final String DELETE_DEPARTMENT = "DELETE FROM departments WHERE department_id=?";
+    private static final String DELETE_EMPLOYEE = "DELETE FROM employees WHERE employee_id=?";
 
-    private static final String DELETE_DEPARTMENT = "DELETE FROM departments where department_id=?";
-    private static final String DELETE_EMPLOYEE = "delete from employees where employee_id=?";
+    private static UserCommandDAO instance;
 
-    private static UserDAO instance;
+    private UserCommandDAO() {}
 
-    private UserDAO() {}
-
-    public static UserDAO getInstance() {
+    /**
+     *  This function was created to incoroporate the Singleton design pattern
+     * @return instance
+     */
+    public static UserCommandDAO getInstance() {
         if (instance == null) {
-            instance = new UserDAO();
+            synchronized (UserCommandDAO.class) {
+                if (instance == null) {
+                    instance = new UserCommandDAO();
+                }
+            }
         }
         return instance;
     }
 
-    /**
-     * This method is used to get the connection
-     * @return connection
-     */
     protected Connection getConnection(){
         Connection connection = null;
         try{
             Class.forName(jdbcDriver);
             connection = DriverManager.getConnection(jdbcURL, jdbcUserName, jdbcPassword);
-
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -56,72 +56,83 @@ public class UserDAO {
     }
 
     /**
-     * This method is used to insert department
+     * This function is used to insert a new department into the database
      * @param departmentName
-     * @return boolean
+     * @return result
      */
-    public boolean insertDepartment(String departmentName){
+    public boolean insertDepartment(String departmentName) {
         boolean result = false;
-        try{
+        try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_DEPARTMENT);
             statement.setString(1, departmentName);
             result = statement.executeUpdate() > 0;
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("DepartmentCreated", departmentName);
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
-     * This method is used to insert users
-     * @param user
-     * @return boolean
+     * This function is used to insert a new employee into the database
+     * @param employee
+     * @return result
      */
-    public boolean insertEmployee(Employee user){
+    public boolean insertEmployee(Employee employee) {
         boolean result = false;
-        try{
+        try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_EMPLOYEE);
-            statement.setString(1, user.getFirst_name());
-            statement.setString(2, user.getLast_name());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getBirth_date());
-            statement.setString(5, user.getJob_title());
-            statement.setInt(6, user.getDepartment_id());
+            statement.setString(1, employee.getFirst_name());
+            statement.setString(2, employee.getLast_name());
+            statement.setString(3, employee.getEmail());
+            statement.setString(4, employee.getBirth_date());
+            statement.setString(5, employee.getJob_title());
+            statement.setInt(6, employee.getDepartment_id());
             result = statement.executeUpdate() > 0;
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("EmployeeCreated", "Employee ID: " + employee.getEmployee_id());
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
-     * This method is used to update department
+     * This function is used to update a department in the database
      * @param department
-     * @return boolean
+     * @return result
      */
-    public boolean updateDepartment(Departments department){
+    public boolean updateDepartment(Departments department) {
         boolean result = false;
         try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(UPDATE_DEPARTMENT);
             statement.setString(1, department.getDepartment_name());
+            statement.setInt(2, department.getDepartment_id());
             result = statement.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("DepartmentUpdated", "Department ID: " + department.getDepartment_id());
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
-     * This method is used to update user
-     * @param user
-     * @return boolean
+     * This function is used to update an employee in the database
+     * @param employee
+     * @return result
      */
-    public boolean updateEmployee(Employee employee){
+    public boolean updateEmployee(Employee employee) {
         boolean result = false;
         try {
             Connection connection = getConnection();
@@ -134,167 +145,76 @@ public class UserDAO {
             statement.setInt(6, employee.getDepartment_id());
             statement.setInt(7, employee.getEmployee_id());
             result = statement.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("EmployeeUpdated", "Employee ID: " + String.valueOf(employee.getEmployee_id()));
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
-
     /**
-     * This method is used to select all departments
-     * @return departments
-     */
-    public List<Departments> selectAllDepartments(){
-        List<Departments> departments = new ArrayList<>();
-        try {
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(SELECT_ALL_DEPARTMENT);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                int id = resultSet.getInt("department_id");
-                String departmentName = resultSet.getString("department_name");
-                departments.add(new Departments(id, departmentName));
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return departments;
-    }
-
-    public String selectDepartmentByID(int department_id){
-        String department_name = null; // Initialize department_name to null
-        try{
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(SELECT_DEPARTMENT_BY_ID);
-            statement.setInt(1, department_id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()){ 
-                department_name = resultSet.getString("department_name");
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return department_name;
-    }
-    
-
-    /**
-     * This method is used to select department by name
-     * @param departmentName
-     * @return department
-     */
-    public Departments selectDepartmentByName(String departmentName){
-        Departments department = null;
-        try{
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(SELECT_DEPARTMENT_BY_NAME);
-            statement.setString(1, departmentName);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                int id = resultSet.getInt("department_id");
-                department = new Departments(id, departmentName);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return department;
-    }
-
-    /**
-     * This method is used to select user by id
-     * @param employee_id
-     * @return user
-     */
-    public Employee selectEmployeeByID(int employee_id){
-        Employee user = null;
-        try{
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(SELECT_EMPLOYEE_BY_ID);
-            statement.setInt(1, employee_id);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String email = resultSet.getString("email");
-                String birthDate = resultSet.getString("birth_date");
-                String jobTitle = resultSet.getString("job_title");
-                int departmentID = resultSet.getInt("department_id");
-                user = new Employee(employee_id, firstName, lastName, email, birthDate, jobTitle, departmentID);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return user;
-    }
-    
-    /**
-     * This method is used to select all users
-     * @return users
-     */
-    public List<Employee> selectAllEmployee(){
-        List<Employee> users = new ArrayList<>();
-
-        try {
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(SELECT_ALL_EMPLOYEE);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()){
-                int id = resultSet.getInt("employee_id");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String email = resultSet.getString("email");
-                String birthDate = resultSet.getString("birth_date");
-                String jobTitle = resultSet.getString("job_title");
-                int departmentID = resultSet.getInt("department_id");
-                users.add(new Employee(id, firstName, lastName, email, birthDate, jobTitle, departmentID));
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        return users;
-    }
-
-    /**
-     * This method is used to delete department
+     * This function is used to delete a department from the database
      * @param id
-     * @return boolean
+     * @return result
      */
-    public boolean deleteDepartment(int id){
+    public boolean deleteDepartment(int id) {
         boolean result = false;
-
         try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(DELETE_DEPARTMENT);
             statement.setInt(1, id);
             result = statement.executeUpdate() > 0;
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("DepartmentDeleted", "Department ID: " + id);
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
-     * This method is used to delete user
+     * This function is used to delete an employee from the database
      * @param id
-     * @return boolean
+     * @return result
      */
-    public boolean deleteUser(int id){
+    public boolean deleteEmployee(int id) {
         boolean result = false;
-
         try {
             Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(DELETE_EMPLOYEE);
             statement.setInt(1, id);
             result = statement.executeUpdate() > 0;
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            if (result) {
+                Event event = new Event("EmployeeDeleted", "Employee ID: " + id);
+                saveEvent(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
 
+    /**
+     * This function is used to save an event to the database
+     * @param event
+     * @return result
+     */
+    public boolean saveEvent(Event event) {
+        boolean result = false;
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(INSERT_EVENT)) {
+
+             statement.setString(1, event.getEventType());
+             statement.setString(2, event.getEventData());
+             result = statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

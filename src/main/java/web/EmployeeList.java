@@ -7,7 +7,7 @@ import java.util.Map;
 
 import bean.Departments;
 import bean.Employee;
-import dao.UserDAO;
+import dao.UserQueryDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -16,12 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class EmployeeList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	UserDAO userDAO = UserDAO.getInstance();
+    UserQueryDAO queryDAO = UserQueryDAO.getInstance();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    RequestDispatcher dispatcher = request.getRequestDispatcher("list.jsp");
-	    List<Departments> departmentsList = userDAO.selectAllDepartments();
-	    List<Employee> employeesList = userDAO.selectAllEmployee();
+	    List<Departments> departmentsList = queryDAO.selectAllDepartments();
+	    List<Employee> employeesList = queryDAO.selectAllEmployee();
 	    
 	    // Create a map to hold department information
 	    Map<Integer, String> departmentMap = new HashMap<>();
