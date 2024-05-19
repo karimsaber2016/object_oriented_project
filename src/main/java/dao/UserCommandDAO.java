@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 import bean.Event;
 import bean.Departments;
@@ -78,31 +79,40 @@ public class UserCommandDAO {
     }
 
     /**
-     * This function is used to insert a new employee into the database
-     * @param employee
-     * @return result
+     * This function is used to insert a new employee into the database.
+     * @param employee The employee to insert.
+     * @return True if the insertion was successful, otherwise false.
      */
     public boolean insertEmployee(Employee employee) {
         boolean result = false;
-        try {
-            Connection connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(INSERT_EMPLOYEE);
+        String generatedColumns[] = { "ID" };  // Assumes the employee ID is generated automatically
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(INSERT_EMPLOYEE, generatedColumns)) {
+            
             statement.setString(1, employee.getFirst_name());
             statement.setString(2, employee.getLast_name());
             statement.setString(3, employee.getEmail());
             statement.setString(4, employee.getBirth_date());
             statement.setString(5, employee.getJob_title());
             statement.setInt(6, employee.getDepartment_id());
-            result = statement.executeUpdate() > 0;
-            if (result) {
-                Event event = new Event("EmployeeCreated", "Employee ID: " + employee.getEmployee_id());
-                saveEvent(event);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int employeeId = generatedKeys.getInt(1);
+                        Event event = new Event("EmployeeCreated", "Employee ID: " + employeeId);
+                        saveEvent(event);
+                        result = true;
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
     }
+
 
     /**
      * This function is used to update a department in the database
